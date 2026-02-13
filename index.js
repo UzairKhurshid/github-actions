@@ -5,7 +5,16 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+app.post('/api/webhook', (req, res) => {
+  console.log(req.body);
+  res.json({
+    message: 'Webhook Received',
+    success: true,
+  });
+});
+
 app.get('/health', (req, res) => {
+  console.log('--------------------------------');
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
