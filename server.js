@@ -244,7 +244,6 @@ app.post('/api/webhook', async(req, res) => {
             event,
             branch: 'main',
             message,
-            type,
             timestamp: new Date().toISOString(),
           },
           {

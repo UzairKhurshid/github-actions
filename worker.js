@@ -1,6 +1,7 @@
-// worker.js
-const { Worker } = require('bullmq');
+const { Worker, Queue } = require('bullmq');
 const { connection } = require('./queue');
+
+const deploymentQueue = new Queue('deployment-queue', { connection });
 
 console.log('👷 Worker started...');
 
@@ -11,11 +12,32 @@ const worker = new Worker(
     console.log('Job Name:', job.name);
     console.log('Data:', job.data);
 
-    // Simulate deployment work
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (job.name === 'run-deployment') {
+        console.log('--------------------------------')
+      // Check queue counts
+      const counts = await deploymentQueue.getJobCounts('waiting', 'active');
+      const waiting = counts.waiting || 0;
+      const active = counts.active || 0;
 
-    console.log('✅ Job completed:', job.id);
-    return true;
+      console.log(`🔹 Queue status - Waiting: ${waiting}, Active: ${active}`);
+
+      if (waiting + active > 1) {
+        // There are other jobs waiting → re-add same job at the end
+        console.log('⚠️ Queue not empty, re-adding deployment job...');
+        await deploymentQueue.add('run-deployment', job.data, { delay: 1000 });
+        return;
+      } else {
+        // Queue empty (no other jobs waiting)
+        console.log('✅ Queue is empty, running deployment now...');
+        // Simulate deployment work
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log('🎉 Deployment job completed successfully');
+      }
+    } else {
+      // For any other job type, just process normally
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('✅ Job completed:', job.id);
+    }
   },
   { connection }
 );
