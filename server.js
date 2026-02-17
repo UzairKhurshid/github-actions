@@ -1,3 +1,4 @@
+require('dotenv').config();
 // server.js
 const express = require('express');
 const { deploymentQueue } = require('./queue');
@@ -272,6 +273,7 @@ app.post('/api/webhook', async(req, res) => {
    🟢 HEALTH
 ================================ */
 app.get('/health', (req, res) => {
+  console.log('Health check');
   console.log('Health check');
   console.log('Health check');
   res.json({
