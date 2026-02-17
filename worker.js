@@ -23,8 +23,8 @@ const worker = new Worker(
         if (waiting + active > 1) {
           console.log('--------------------------------!DEPLOYMENT RE-ADDED')  
           // There are other jobs waiting → re-add same job at the end
-          console.log('⚠️ Queue not empty, re-adding deployment job...');
-          await deploymentQueue.add('run-deployment', job.data, { delay: 1000 });
+          console.log('⚠️ Queue not empty, re-adding deployment job...for 20 seconds');
+          await deploymentQueue.add('run-deployment', job.data, { delay: 20000 });
           return;
         } else {
           console.log('--------------------------------@DEPLOYMENT COMPLETED');
