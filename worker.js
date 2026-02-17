@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Worker, Queue } = require('bullmq');
 const { connection } = require('./queue');
 const axios = require('axios');
