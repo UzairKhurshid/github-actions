@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.post('/api/webhook', (req, res) => {
+  console.log(req.headers);
   console.log(req.body);
   res.json({
     message: 'Webhook Received',
