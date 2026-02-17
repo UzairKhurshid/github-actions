@@ -1,10 +1,33 @@
+// server.js
 const express = require('express');
+const { deploymentQueue } = require('./queue');
+
+const { createBullBoard } = require('@bull-board/api');
+const { BullMQAdapter } = require('@bull-board/api/bullMQAdapter');
+const { ExpressAdapter } = require('@bull-board/express');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
 
+/* =====================================
+   📊 BULL BOARD SETUP
+===================================== */
+
+const serverAdapter = new ExpressAdapter();
+serverAdapter.setBasePath('/admin/queues');
+
+createBullBoard({
+  queues: [new BullMQAdapter(deploymentQueue)],
+  serverAdapter,
+});
+
+app.use('/admin/queues', serverAdapter.getRouter());
+
+
+/* ================================
+   🚀 WEBHOOK
+================================ */
 app.post('/api/webhook', (req, res) => {
   // console.log(req.headers);
   // console.log(req.body);
@@ -190,13 +213,29 @@ app.post('/api/webhook', (req, res) => {
   if (event === 'push') {
     const branch = req.body.ref;
 
-    if (branch === 'refs/heads/main') {
-      console.log("✅ Code pushed to main branch");
+    if (event === 'push' && req.body.ref === 'refs/heads/main') {
+      console.log("🚀 Code reached main branch");
 
-      console.log("Commit message:", req.body.head_commit.message);
-      console.log("Commit ID:", req.body.head_commit.id);
-      console.log("Modified files:", req.body.head_commit.modified);
+      const message = req.body.head_commit.message;
+
+      if (message.startsWith("Merge pull request")) {
+          console.log("🔥 It was a PR merge");
+      } else {
+          console.log("✏️ Direct push to main");
+      }
     }
+
+    // 🔹 Handle PR merged explicitly
+    if (event === 'pull_request') {
+        if (
+            req.body.action === 'closed' &&
+            req.body.pull_request.merged &&
+            req.body.pull_request.base.ref === 'main'
+        ) {
+            console.log("🔥 PR merged into main (from pull_request event)");
+        }
+    }
+
   }
   res.json({
     message: 'Webhook Received',
@@ -204,26 +243,31 @@ app.post('/api/webhook', (req, res) => {
   });
 });
 
+/* ================================
+   🟢 HEALTH
+================================ */
 app.get('/health', (req, res) => {
-  console.log('--------------------------------');
   res.json({
     status: 'ok',
-    timestamp: new Date().toISOString(),
     uptime: process.uptime(),
   });
 });
 
-app.get('/test', (req, res) => {
-  console.log('-test')
-  console.log('-test')
-  console.log('-test')
-  console.log('-test')
-  res.json({
-    message: 'Test endpoint is working',
-    success: true,
-  });
-});
+/* ================================
+   🚀 SERVER START
+================================ */
+app.listen(PORT, async () => {
+  console.log(`API running on port ${PORT}`);
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  // 🔥 Add 10 startup jobs
+  console.log('📦 Adding 10 startup jobs...');
+
+  for (let i = 1; i <= 10; i++) {
+    await deploymentQueue.add('startup-job', {
+      number: i,
+      createdAt: new Date().toISOString(),
+    });
+  }
+
+  console.log('✅ Startup jobs added');
 });
