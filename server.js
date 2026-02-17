@@ -247,6 +247,7 @@ app.post('/api/webhook', (req, res) => {
    🟢 HEALTH
 ================================ */
 app.get('/health', (req, res) => {
+  console.log('Health check');
   res.json({
     status: 'ok',
     uptime: process.uptime(),
