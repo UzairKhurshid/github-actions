@@ -280,7 +280,7 @@ app.get('/health', (req, res) => {
   console.log('Health check');
   console.log('Health check');
   res.json({
-    status: 'ok',
+    status: 'okk',
     uptime: process.uptime(),
   });
 });
