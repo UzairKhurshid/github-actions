@@ -277,6 +277,8 @@ app.post('/api/webhook', async(req, res) => {
 ================================ */
 app.get('/health', (req, res) => {
   console.log('Health check');
+  console.log('Health check');
+  console.log('Health check');
   res.json({
     status: 'ok',
     uptime: process.uptime(),
