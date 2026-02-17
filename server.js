@@ -217,26 +217,22 @@ app.post('/api/webhook', async(req, res) => {
       console.log("🚀 Code reached main branch");
 
       const message = req.body.head_commit.message;
-    
+
       if (message.startsWith("Merge pull request")) {
         console.log("🔥 It was a PR merge");
-        // Add deployment job with 10s delay
-        await deploymentQueue.add(
-          'run-deployment',            // job name
-          {
-            event,
-            branch: 'main',
-            message,
-            type,
-            timestamp: new Date().toISOString(),
-          },
-          {
-            delay: 10000               // 10 seconds delay
-          }
-        );
-        console.log("📦 Deployment job queued with 10s delay");
       } else {
         console.log("✏️ Direct push to main");
+      }
+
+      const existingDeploymentJobs = await deploymentQueue.getJobs(
+        ['waiting', 'active', 'delayed']
+      );
+
+      const hasDeploymentJob = existingDeploymentJobs.some(job => job.name === 'run-deployment');
+
+      if (hasDeploymentJob) {
+        console.log("⚠️ run-deployment job already exists in queue. Skipping adding a new one.");
+      } else{
         // Add deployment job with 10s delay
         await deploymentQueue.add(
           'run-deployment',            // job name
