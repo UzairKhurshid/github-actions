@@ -50,9 +50,7 @@ const worker = new Worker(
               `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`,
               {
                 ref: 'main',         // branch to run workflow on
-                inputs: {            // optional workflow inputs
-                  TEST_RUN: 'false'
-                }
+                inputs: { TEST_RUN: 'false' }
               },
               {
                 headers: {

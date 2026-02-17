@@ -1,7 +1,12 @@
 name: Deploy to ECS Fargate
 
 on:
-  workflow_dispatch:   # Manual trigger only
+  workflow_dispatch:
+    inputs:
+      TEST_RUN:
+        description: 'Run workflow in test mode'
+        required: true
+        default: 'true'
 
 jobs:
   deploy:
@@ -14,10 +19,9 @@ jobs:
       - name: Test AWS Step (skip if TEST_RUN)
         if: github.event.inputs.TEST_RUN == 'true'
         run: |
-          echo "✅ TEST_RUN is enabled. Skipping AWS credential setup and deployment steps."
+          echo "✅ TEST_RUN is enabled. Skipping AWS steps."
           echo "Workflow ran successfully!"
 
-      # Only run AWS steps if TEST_RUN is not true
       - name: Configure AWS credentials
         if: github.event.inputs.TEST_RUN != 'true'
         uses: aws-actions/configure-aws-credentials@v4
@@ -26,29 +30,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: Login to Amazon ECR
-        if: github.event.inputs.TEST_RUN != 'true'
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build Docker image
-        if: github.event.inputs.TEST_RUN != 'true'
-        run: |
-          docker build -t my-app .
-
-      - name: Tag image
-        if: github.event.inputs.TEST_RUN != 'true'
-        run: |
-          docker tag my-app:latest ${{ secrets.ECR_REPOSITORY_URI }}:latest
-
-      - name: Push to ECR
-        if: github.event.inputs.TEST_RUN != 'true'
-        run: |
-          docker push ${{ secrets.ECR_REPOSITORY_URI }}:latest
-
       - name: Deploy to ECS
         if: github.event.inputs.TEST_RUN != 'true'
         run: |
-          aws ecs update-service \
-            --cluster my-ecs-cluster \
-            --service my-ecs-service \
-            --force-new-deployment
+          echo "🔥 Deploying to ECS..."
