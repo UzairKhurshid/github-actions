@@ -40,6 +40,10 @@ const worker = new Worker(
           // Simulate deployment work
           await new Promise(resolve => setTimeout(resolve, 2000));
           console.log('🎉 Deployment job completed successfully');
+          console.log('GITHUB_TOKEN', GITHUB_TOKEN);
+          console.log('GITHUB_OWNER', GITHUB_OWNER);
+          console.log('GITHUB_REPO', GITHUB_REPO);
+          console.log('WORKFLOW_FILE', WORKFLOW_FILE);
           try {
             const response = await axios.post(
               `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`,
