@@ -24,6 +24,7 @@ app.get('/health', (req, res) => {
 
 app.get('/test', (req, res) => {
   console.log('-test')
+  console.log('-test')
   res.json({
     message: 'Test endpoint is working',
     success: true,
