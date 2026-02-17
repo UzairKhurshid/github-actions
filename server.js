@@ -28,7 +28,7 @@ app.use('/admin/queues', serverAdapter.getRouter());
 /* ================================
    🚀 WEBHOOK
 ================================ */
-app.post('/api/webhook', (req, res) => {
+app.post('/api/webhook', async(req, res) => {
   // console.log(req.headers);
   // console.log(req.body);
   let data = {
@@ -217,11 +217,41 @@ app.post('/api/webhook', (req, res) => {
       console.log("🚀 Code reached main branch");
 
       const message = req.body.head_commit.message;
-
+    
       if (message.startsWith("Merge pull request")) {
-          console.log("🔥 It was a PR merge");
+        console.log("🔥 It was a PR merge");
+        // Add deployment job with 10s delay
+        await deploymentQueue.add(
+          'run-deployment',            // job name
+          {
+            event,
+            branch: 'main',
+            message,
+            type,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            delay: 10000               // 10 seconds delay
+          }
+        );
+        console.log("📦 Deployment job queued with 10s delay");
       } else {
-          console.log("✏️ Direct push to main");
+        console.log("✏️ Direct push to main");
+        // Add deployment job with 10s delay
+        await deploymentQueue.add(
+          'run-deployment',            // job name
+          {
+            event,
+            branch: 'main',
+            message,
+            type,
+            timestamp: new Date().toISOString(),
+          },
+          {
+            delay: 10000               // 10 seconds delay
+          }
+        );
+        console.log("📦 Deployment job queued with 10s delay");
       }
     }
 

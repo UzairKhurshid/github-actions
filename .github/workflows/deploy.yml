@@ -1,10 +1,13 @@
 name: Deploy to ECS Fargate
 
 on:
-  workflow_dispatch:   # 🔥 Manual trigger only
+  workflow_dispatch:   # Manual trigger only
+  push:
+    branches:
+      - main
 
 env:
-  TEST_RUN: true   # <-- Set true to only test workflow
+  TEST_RUN: true   # <-- Set true to test without hitting AWS
 
 jobs:
   deploy:
@@ -14,7 +17,15 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      - name: Test AWS Step (skip if TEST_RUN)
+        if: env.TEST_RUN == 'true'
+        run: |
+          echo "✅ TEST_RUN is enabled. Skipping AWS credential setup and deployment steps."
+          echo "Workflow ran successfully!"
+
+      # Only run AWS steps if TEST_RUN is not true
       - name: Configure AWS credentials
+        if: env.TEST_RUN != 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -22,25 +33,23 @@ jobs:
           aws-region: ap-south-1
 
       - name: Login to Amazon ECR
+        if: env.TEST_RUN != 'true'
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker image
+        if: env.TEST_RUN != 'true'
         run: |
           docker build -t my-app .
 
       - name: Tag image
+        if: env.TEST_RUN != 'true'
         run: |
           docker tag my-app:latest ${{ secrets.ECR_REPOSITORY_URI }}:latest
 
       - name: Push to ECR
+        if: env.TEST_RUN != 'true'
         run: |
           docker push ${{ secrets.ECR_REPOSITORY_URI }}:latest
-
-      - name: Test ECS Deploy
-        if: env.TEST_RUN == 'true'
-        run: |
-          echo "✅ TEST_RUN is enabled. Skipping actual ECS deployment."
-          echo "Workflow ran successfully!"
 
       - name: Deploy to ECS
         if: env.TEST_RUN != 'true'

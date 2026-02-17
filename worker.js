@@ -12,9 +12,10 @@ const worker = new Worker(
     console.log('Data:', job.data);
 
     // Simulate deployment work
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     console.log('✅ Job completed:', job.id);
+    return true;
   },
   { connection }
 );
