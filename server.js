@@ -276,6 +276,7 @@ app.get('/health', (req, res) => {
   console.log('Health check');
   console.log('Health check');
   console.log('Health check');
+  console.log('Health check');
   res.json({
     status: 'okk',
     uptime: process.uptime(),
