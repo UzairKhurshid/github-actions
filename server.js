@@ -13,17 +13,17 @@ app.use(express.json());
 /* =====================================
    📊 BULL BOARD SETUP
 ===================================== */
-
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/queues');
 
+/* =====================================
+   📊 BULL BOARD UI
+===================================== */
 createBullBoard({
   queues: [new BullMQAdapter(deploymentQueue)],
   serverAdapter,
 });
-
 app.use('/admin/queues', serverAdapter.getRouter());
-
 
 /* ================================
    🚀 WEBHOOK
