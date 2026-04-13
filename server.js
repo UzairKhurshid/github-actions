@@ -277,6 +277,11 @@ app.post('/api/webhook', async(req, res) => {
 
 app.get("/api/webhook/run-worker-deploy", async(req, res) => {
   try {
+    console.log("________FIXED__________");
+    console.log("________FIXED__________");
+    console.log("________FIXED__________");
+    console.log("________FIXED__________");
+    console.log("________FIXED__________");
     let url = `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/dispatches`;
     const response = await fetch(
       url,
