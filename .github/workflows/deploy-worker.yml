@@ -7,8 +7,6 @@ on:
       - main
     paths:
       - "worker.js"
-      - "worker/**"
-      - "shared/**"
 
   workflow_dispatch:   # 👈 manual trigger support
 

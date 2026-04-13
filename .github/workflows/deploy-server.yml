@@ -6,8 +6,6 @@ on:
       - main
     paths:
       - "server.js"
-      - "main/**"
-      - "shared/**"
 
 jobs:
   deploy-server:
