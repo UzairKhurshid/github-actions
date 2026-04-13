@@ -1,0 +1,27 @@
+name: Deploy Server
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "server.js"
+      - "main/**"
+      - "shared/**"
+
+jobs:
+  deploy-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Server Image
+        run: |
+          echo "Building SERVER..."
+          docker build -t my-server -f Dockerfile.server .
+
+      - name: Deploy to ECS (Server)
+        run: |
+          echo "Deploying SERVER to ECS..."
+          # aws ecs update-service ...

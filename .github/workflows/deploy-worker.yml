@@ -1,0 +1,30 @@
+
+name: Deploy Worker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "worker.js"
+      - "worker/**"
+      - "shared/**"
+
+  workflow_dispatch:   # 👈 manual trigger support
+
+jobs:
+  deploy-worker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Worker Image
+        run: |
+          echo "Building WORKER..."
+          docker build -t my-worker -f Dockerfile.worker .
+
+      - name: Deploy to ECS (Worker)
+        run: |
+          echo "Deploying WORKER to ECS..."
+          # aws ecs update-service ...
