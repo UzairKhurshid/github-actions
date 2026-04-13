@@ -276,20 +276,42 @@ app.post('/api/webhook', async(req, res) => {
 });
 
 app.get("/api/webhook/run-worker-deploy", async(req, res) => {
-  console.log("--------------------------------");
-  console.log("-------------Running Worker Deploy Action-------------------");  
-  console.log("-------------Running Worker Deploy Action-------------------");  
-  await fetch("https://api.github.com/repos/OWNER/REPO/dispatches", {
-    method: "POST",
-    headers: {
-      Authorization: `token YOUR_GITHUB_TOKEN`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      event_type: "run-worker-deploy",
-    }),
-  });
+  try {
+  const response = await fetch(
+    `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/dispatches`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GITHUB_DISPATCH_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        event_type: "run-worker-deploy",
+      }),
+    }
+  );
+  
+  const data = await response.text();
+  
+  console.log("GitHub Response Status:", response.status);
+  console.log("GitHub Response Body:", data);
+  
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status}`);
+  }
+  return res.status(200).json({
+      message: 'Worker Deploy Action Running',
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    console.error('Error running worker deploy action:', error);
+    return res.status(500).json({
+      message: 'Error running worker deploy action',
+      success: false,
+    });
+  }
 })
 
 /* ================================
