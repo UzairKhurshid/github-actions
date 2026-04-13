@@ -277,30 +277,37 @@ app.post('/api/webhook', async(req, res) => {
 
 app.get("/api/webhook/run-worker-deploy", async(req, res) => {
   try {
-  const response = await fetch(
-    `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/dispatches`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.GITHUB_DISPATCH_TOKEN}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        event_type: "run-worker-deploy",
-      }),
+    let url = `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/dispatches`;
+    console.log(url);
+    console.log(url);
+    console.log(url);
+    console.log(url);
+    console.log(url);
+    console.log(url);
+    const response = await fetch(
+      url,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.GITHUB_DISPATCH_TOKEN}`,
+          Accept: "application/vnd.github+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          event_type: "run-worker-deploy",
+        }),
+      }
+    );
+    
+    const data = await response.text();
+    
+    console.log("GitHub Response Status:", response.status);
+    console.log("GitHub Response Body:", data);
+    
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.status}`);
     }
-  );
-  
-  const data = await response.text();
-  
-  console.log("GitHub Response Status:", response.status);
-  console.log("GitHub Response Body:", data);
-  
-  if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.status}`);
-  }
-  return res.status(200).json({
+    return res.status(200).json({
       message: 'Worker Deploy Action Running',
       success: true,
     });
