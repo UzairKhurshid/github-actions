@@ -30,8 +30,13 @@ app.use('/admin/queues', serverAdapter.getRouter());
    🚀 WEBHOOK
 ================================ */
 app.post('/api/webhook', async(req, res) => {
-  // console.log(req.headers);
-  // console.log(req.body);
+  console.log("--------------------------------");
+  console.log("--------------------------------");
+  console.log("--------------------------------");
+  console.log("--------------------------------");
+  console.log("Webhook Received!!!!!!");
+  console.log(req.headers);
+  console.log(req.body);
   let data = {
     ref: 'refs/heads/main',
     before: '79c7c27be6199dde7805f6e75a177d47ce1dee25',

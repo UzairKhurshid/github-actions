@@ -8,6 +8,11 @@ on:
         required: true
         default: 'true'
 
+      TARGET:
+        description: 'What to deploy (server | worker | all)'
+        required: true
+        default: 'all'
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,12 +21,19 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      # ================================
+      # 🧪 TEST MODE
+      # ================================
       - name: Test AWS Step (skip if TEST_RUN)
         if: github.event.inputs.TEST_RUN == 'true'
         run: |
           echo "✅ TEST_RUN is enabled. Skipping AWS steps."
+          echo "Target: ${{ github.event.inputs.TARGET }}"
           echo "Workflow ran successfully!"
 
+      # ================================
+      # ☁️ AWS CONFIG
+      # ================================
       - name: Configure AWS credentials
         if: github.event.inputs.TEST_RUN != 'true'
         uses: aws-actions/configure-aws-credentials@v4
@@ -30,7 +42,30 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: Deploy to ECS
-        if: github.event.inputs.TEST_RUN != 'true'
+      # ================================
+      # 🚀 DEPLOY SERVER
+      # ================================
+      - name: Deploy Server Service
+        if: github.event.inputs.TEST_RUN != 'true' && (github.event.inputs.TARGET == 'server' || github.event.inputs.TARGET == 'all')
         run: |
-          echo "🔥 Deploying to ECS..."
+          echo "🚀 Deploying SERVER ECS service"
+          
+          # Example steps (replace with your real pipeline)
+          # docker build -t server-image .
+          # docker tag server-image:latest <ECR_SERVER_IMAGE>
+          # docker push <ECR_SERVER_IMAGE>
+          # aws ecs update-service --cluster <cluster> --service <server-service> --force-new-deployment
+
+      # ================================
+      # 👷 DEPLOY WORKER
+      # ================================
+      - name: Deploy Worker Service
+        if: github.event.inputs.TEST_RUN != 'true' && (github.event.inputs.TARGET == 'worker' || github.event.inputs.TARGET == 'all')
+        run: |
+          echo "👷 Deploying WORKER ECS service"
+          
+          # Example steps (replace with your real pipeline)
+          # docker build -t worker-image .
+          # docker tag worker-image:latest <ECR_WORKER_IMAGE>
+          # docker push <ECR_WORKER_IMAGE>
+          # aws ecs update-service --cluster <cluster> --service <worker-service> --force-new-deployment
