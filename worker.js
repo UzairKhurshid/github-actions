@@ -80,6 +80,8 @@ const worker = new Worker(
 
 worker.on('completed', job => {
   console.log(`🎉 Job ${job.id} finished successfully`);
+  console.log(`🎉 Job ${job.id} finished successfully`);
+  console.log(`🎉 Job ${job.id} finished successfully`);
 });
 
 worker.on('failed', (job, err) => {
