@@ -275,6 +275,22 @@ app.post('/api/webhook', async(req, res) => {
   });
 });
 
+app.get("/api/webhook/run-worker-deploy", async(req, res) => {
+  console.log("--------------------------------");
+  console.log("-------------Running Worker Deploy Action-------------------");  
+  await fetch("https://api.github.com/repos/OWNER/REPO/dispatches", {
+    method: "POST",
+    headers: {
+      Authorization: `token YOUR_GITHUB_TOKEN`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      event_type: "run-worker-deploy",
+    }),
+  });
+}
+
 /* ================================
    🟢 HEALTH
 ================================ */

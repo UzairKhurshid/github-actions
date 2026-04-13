@@ -1,14 +1,10 @@
-
 name: Deploy Worker
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "worker.js"
+  workflow_dispatch:   # manual run from GitHub UI
 
-  workflow_dispatch:   # 👈 manual trigger support
+  repository_dispatch:
+    types: [run-worker-deploy]   # trigger from API/code
 
 jobs:
   deploy-worker:
