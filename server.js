@@ -278,12 +278,6 @@ app.post('/api/webhook', async(req, res) => {
 app.get("/api/webhook/run-worker-deploy", async(req, res) => {
   try {
     let url = `https://api.github.com/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/dispatches`;
-    console.log(url);
-    console.log(url);
-    console.log(url);
-    console.log(url);
-    console.log(url);
-    console.log(url);
     const response = await fetch(
       url,
       {
@@ -294,7 +288,7 @@ app.get("/api/webhook/run-worker-deploy", async(req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          event_type: "run-worker-deploy",
+          event_type: `${process.env.GITHUB_EVENT_TYPE}`,
         }),
       }
     );
