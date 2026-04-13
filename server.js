@@ -289,7 +289,7 @@ app.get("/api/webhook/run-worker-deploy", async(req, res) => {
       event_type: "run-worker-deploy",
     }),
   });
-}
+})
 
 /* ================================
    🟢 HEALTH
