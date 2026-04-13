@@ -278,6 +278,7 @@ app.post('/api/webhook', async(req, res) => {
 app.get("/api/webhook/run-worker-deploy", async(req, res) => {
   console.log("--------------------------------");
   console.log("-------------Running Worker Deploy Action-------------------");  
+  console.log("-------------Running Worker Deploy Action-------------------");  
   await fetch("https://api.github.com/repos/OWNER/REPO/dispatches", {
     method: "POST",
     headers: {
