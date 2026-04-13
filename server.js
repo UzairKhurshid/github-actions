@@ -35,7 +35,6 @@ app.post('/api/webhook', async(req, res) => {
   console.log("--------------------------------");
   console.log("--------------------------------");
   console.log("Webhook Received!!!!!!");
-  console.log(req.headers);
   console.log(req.body);
   let data = {
     ref: 'refs/heads/main',
